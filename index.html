@@ -2,7 +2,8 @@
 <html>
 <head>
 	<title>timmysiauw/io-grid</title>
-	<script src = "https://raw.githubusercontent.com/timmysiauw/io-grid/master/io-grid.js"></script>
+
+	<script src = "io-grid.js"></script>
     <script src = "paper-full.min.js"></script>
     <script>
 
@@ -128,7 +129,7 @@
         canvas.style.width = (W-2*margin) + "px";
 
         // create a grid that spans canvas
-    	var grid = new IOGrid({x0: 0, xf:W, dx: dx, y0: 0, yf: H, dy: dy});
+    	var grid = new Grid({x0: 0, xf:W, dx: dx, y0: 0, yf: H, dy: dy});
 
         // setup paper stuff
         paper.setup(canvas);
@@ -212,7 +213,7 @@
             W = window.innerWidth,
             H = window.innerHeight;
 
-            grid = new IOGrid({x0: 0, xf:W, dx: dx, y0: 0, yf: H, dy: dy});
+            grid = new Grid({x0: 0, xf:W, dx: dx, y0: 0, yf: H, dy: dy});
 
             paper.view.setViewSize(W-2*margin, H-2*margin);
         };
