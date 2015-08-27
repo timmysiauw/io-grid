@@ -16,8 +16,8 @@ Create a 200x100 grid object with an increment size of 1 where the upper left-ha
 
 Get the points that are inside a 50x50 square where the upper left-hand corner is at (20,20).
 
-'var points = grid.pointsInPoly([{x: 20, y: 20},{x: 70, y: 20},{x: 70, y: 70},{x: 20, y: 70}]);'
+`var points = grid.pointsInPoly([{x: 20, y: 20},{x: 70, y: 20},{x: 70, y: 70},{x: 20, y: 70}]);`
 
 ## Demo
 
-[Try it out.](http://timmysiauw.github.io/io-grid/)
+Try out the [demo](http://timmysiauw.github.io/io-grid/) using [paper.js](http://paperjs.org/).
