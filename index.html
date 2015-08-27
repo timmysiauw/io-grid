@@ -85,11 +85,12 @@
         <p id = "about-toggle">About</p>
 
         <div id = "about-body">
-            <p> This is about what's happening in the picture...</p>
-            <p> This is about what's happening in the picture...</p>
-            <p> This is about what's happening in the picture...</p>
-            <p> This is about what's happening in the picture...</p>
-            <p> This is about what's happening in the picture...</p>
+            <p> io-grid.js computes points on a grid that are inside a closed polygon. </p>
+            <p> It is (much) more efficient than naively checking each point because it takes advantage of the fact that the points in question are structured into a grid. </p>
+            <p> Specifically, it abuses the <a href = "https://en.wikipedia.org/wiki/Point_in_polygon#Ray_casting_algorithm">ray casting algorithm</a> and the fact that every row of points in a grid lies on one of these rays. So every point in a row can be checked at once.</p>
+            <p> Also, knowing that the row is strictly horizontal simplies the intersection calculations. </p>
+            <p> Actual time testing pending, most of the time spent computing the points is probably in generating the data structures that store the point coordinates rather than the in-out test itself. </p>
+            <p> Try it yourself on <a href = "https://github.com/timmysiauw/io-grid/tree/master"></a>
         </div>
     </div>
 
