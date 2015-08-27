@@ -1,1 +1,223 @@
-My Page
+<!DOCTYPE html>
+<html>
+<head>
+	<title>timmysiauw/io-grid</title>
+	<script src = "https://raw.githubusercontent.com/timmysiauw/io-grid/master/io-grid.js"></script>
+    <script src = "paper-full.min.js"></script>
+    <script>
+
+        var EPS = .001;
+
+        paper.Path.prototype.points = function() {
+            var points = [];
+            for (var i=0; i<this.segments.length; i++) {
+                
+                if (this.segments[i].point.x < 0 || this.segments[i].point.x > W || this.segments[i].point.y < 0 || this.segments[i].point.y > H) {
+                    return null;
+                }
+
+                points.push({
+                    x: this.segments[i].point.x + EPS*Math.random(), 
+                    y: this.segments[i].point.y + EPS*Math.random()
+                })
+            };
+            return points;
+        };
+
+    </script>
+    <style>
+        body {
+            font-family: "Courier New";
+            font-size: 24px;
+            margin: 0px;
+            padding: 0px;
+        }
+        canvas {
+            background-color: #292929;
+            margin: 10px;
+            padding: 0px;
+        }
+        #banner {
+            position:absolute;
+            width:100%; 
+            z-index: 10
+        }
+        #banner p {
+            text-align:center; 
+            color:#FFF
+        }
+        #about {
+            position:absolute; 
+            width:30%; 
+            z-index:10; 
+            margin-left:20px;
+        }
+        #about p {
+            font-size: 18px;
+            color: #FFF;
+        }
+        #about-toggle {
+            font-size: 18px;
+        }
+        #about-toggle:hover {
+            text-decoration: underline;
+            cursor: pointer;
+        }
+        #about-toggle.active {
+            text-decoration: underline;
+        }
+        #about-body {
+            display: none
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <div id = "banner">
+        <p> Draw a path.</p>
+    </div>
+
+    <div id = "about">
+        <p id = "about-toggle">About</p>
+
+        <div id = "about-body">
+            <p> This is about what's happening in the picture...</p>
+            <p> This is about what's happening in the picture...</p>
+            <p> This is about what's happening in the picture...</p>
+            <p> This is about what's happening in the picture...</p>
+            <p> This is about what's happening in the picture...</p>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById("about-toggle").addEventListener("click", function(event) {
+            if (this.className === "active") {
+                this.className = "";
+                document.getElementById("about-body").style.display = "none";
+            }
+            else {
+                this.className = "active";
+                document.getElementById("about-body").style.display = "block"
+            }
+            
+        });
+    </script>
+
+    <canvas id = "canvas"></canvas>
+
+	<script>
+
+        var W = window.innerWidth,
+            H = window.innerHeight;
+
+        // page parameters
+        var margin = 10; // margins around canvas (aesthetic)
+            dx = 10, // discretization of grid
+            dy = 10,  
+            pointRadius = 3, // point radius
+            pointColor = "#08A7FF",
+            strokeColor = "#FF656E", 
+            strokeWidth = 3,
+            fontFamily = "Courier New",
+            fontSize = 20;
+
+        var canvas = document.getElementById("canvas");
+        canvas.style.height = (H-2*margin) + "px";
+        canvas.style.width = (W-2*margin) + "px";
+
+        // create a grid that spans canvas
+    	var grid = new IOGrid({x0: 0, xf:W, dx: dx, y0: 0, yf: H, dy: dy});
+
+        // setup paper stuff
+        paper.setup(canvas);
+        var layer = new paper.Layer();
+        var tool = new paper.Tool();
+        var poly;
+
+        tool.onMouseDown = function(event) {
+            layer.removeChildren();
+            paper.view.draw();
+            poly = new paper.Path({
+                strokeColor: strokeColor,
+                strokeWidth: strokeWidth
+            });
+            poly.add(event.point);
+        };
+
+        tool.onMouseDrag = function(event) {
+            poly.add(event.point);
+        };
+
+        tool.onMouseUp = function(event) {
+
+            poly.closed = true;
+            poly.segments.length > 1 && poly.flatten(20);
+
+            if (poly.segments.length < 3) {
+                layer.removeChildren();
+                paper.view.draw();
+                new paper.PointText({
+                    point: [margin, H-2*margin-fontSize],
+                    content: "Polygon must have at least 3 sides!",
+                    fillColor: "#FFFFFF",
+                    fontFamily: fontFamily,
+                    fontSize: fontSize
+                });
+                return;
+            }
+
+            var ppoints = poly.points();
+            if (!ppoints) {
+                layer.removeChildren();
+                paper.view.draw();
+                new paper.PointText({
+                    point: [margin, H-2*margin-fontSize],
+                    content: "Please stay inside the canvas!",
+                    fillColor: "#FFFFFF",
+                    fontFamily: fontFamily,
+                    fontSize: fontSize
+                });
+                return;  
+            }
+
+            var start = new Date().getTime();
+            var points = grid.pointsInPoly(ppoints);
+            var end = new Date().getTime();
+
+            for (var i=0; i<points.length; i++) {
+                new paper.Path.Circle({
+                    center: [points[i].x, points[i].y],
+                    radius: pointRadius,
+                    fillColor: pointColor
+                });
+            };
+
+            new paper.PointText({
+                point: [margin, H-2*margin-fontSize],
+                content: "Found " + points.length + " grid points inside a " + poly.segments.length + "-sided polygon in " + (end-start) + "ms",
+                fillColor: "#FFFFFF",
+                fontFamily: fontFamily,
+                fontSize: fontSize
+            });
+
+            paper.view.draw();
+        };
+
+        window.onresize = function(event) {
+            layer.removeChildren();
+            paper.view.draw();
+
+            W = window.innerWidth,
+            H = window.innerHeight;
+
+            grid = new IOGrid({x0: 0, xf:W, dx: dx, y0: 0, yf: H, dy: dy});
+
+            paper.view.setViewSize(W-2*margin, H-2*margin);
+        };
+    	
+	</script>
+</body>
+
+</html>
